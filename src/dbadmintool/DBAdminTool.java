@@ -16,6 +16,7 @@ public class DBAdminTool {
      */
     public static void main(String[] args) {
         String[] arr = {""};
+        
        AdminToolInterface.main(arr);
     }
     

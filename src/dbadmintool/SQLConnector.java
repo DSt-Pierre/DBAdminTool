@@ -31,7 +31,14 @@ public class SQLConnector {
      * protected constructor. Cannot be instantiated
      */
     protected SQLConnector() {
-
+        server = "";
+        database = "";
+        port = 3306;
+        username = "";
+        password = "";
+        provider = "";
+        bIsConnected= false;
+        bIsValidQuery = false;
     }
     /**
      * password to set
@@ -49,7 +56,7 @@ public class SQLConnector {
     }
     /**
      * Server to set
-     * @param tServ setver to set
+     * @param tServ server to set
      */
     public void setServer(String tServ) {
         server = tServ;
@@ -60,6 +67,12 @@ public class SQLConnector {
      */
     public void setDatabase(String tDB) {
         database = tDB;
+    }
+    /**
+     * get set database name
+     */
+    protected String getDatabase(){
+        return database;
     }
     /**
      * set provider
@@ -101,7 +114,7 @@ public class SQLConnector {
         }
         //build host string
         String Host = "jdbc:" + provider + "://" + server + ":" + String.valueOf(port);
-        if ("".equals(database)) {
+        if ("".equals(database) == false) {
             Host += "/" + database;
         }
         try {
@@ -182,7 +195,7 @@ public class SQLConnector {
         String result = "";
         if (bIsValidQuery) {
             try {
-                Results.getString(column);
+                result = Results.getString(column);
             } catch (SQLException ex) {
                 String[] arr = {"Data retrieve error #1 : " + ex.getMessage()};
                 Message.main(arr);
@@ -257,6 +270,9 @@ public class SQLConnector {
         }
 
         return bIsValidQuery;
+    }
+    protected ResultSet getQueryResults(){
+        return Results;
     }
     /**
      * simple function to determine if the class is connected

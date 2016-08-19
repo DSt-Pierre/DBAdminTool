@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package dbadmintool;
-
+import java.sql.ResultSet;
 /**
  *
  * @author Dave
@@ -23,4 +23,12 @@ public abstract class SQLInterface extends SQLConnector {
     * @return List of tabes from the database
    */
    public abstract List<String> getTables(String Database);
+   /**
+    * 
+    * @param Query the query to execute
+    * @return the resultset
+    */
+   protected abstract ResultSet queryDatabase(String Query);
+   
+   public abstract ResultSet getTableData(String table,String Database);
 }

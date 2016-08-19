@@ -4,14 +4,23 @@
  * and open the template in the editor.
  */
 package dbadmintool;
+
 import javax.swing.DefaultListModel;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+import java.sql.*;
+import java.util.Vector;
+
 /**
  *
  * @author Dave
  */
 public class AdminToolInterface extends javax.swing.JFrame {
+
     private SQLInterface connection = new mySQLConnector();
+
     /**
      * Creates new form AdminToolInterface
      */
@@ -19,47 +28,81 @@ public class AdminToolInterface extends javax.swing.JFrame {
         initComponents();
         devInitComponents();
     }
-    
-    private void devInitComponents(){
+
+    /**
+     * Developer defined initialization
+     */
+    private void devInitComponents() {
         clearDatabaseList();
         clearTableList();
-        Login.main(connection);
-        if(connection.IsConnected()){
-          loadDatabases();  
+        clearTableData();
+        Login.main(connection, this);
+        listDatabases.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    /**
+     * refresh function
+     */
+    public void refresh() {
+        clearDatabaseList();
+        clearTableList();
+        if (connection.IsConnected()) {
+            loadDatabases();
         }
     }
-    
-    private void clearDatabaseList(){
+
+    /**
+     * clear database list
+     */
+    private void clearDatabaseList() {
         DefaultListModel model = new DefaultListModel();
         listDatabases.setModel(model);
         model.removeAllElements();
     }
-    
-    private void clearTableList(){
+
+    /**
+     * clear table list
+     */
+    private void clearTableList() {
         DefaultListModel model = new DefaultListModel();
         listTables.setModel(model);
         model.removeAllElements();
     }
-    
-    private void loadDatabases(){
+
+    private void clearTableData() {
+        DefaultTableModel model = new DefaultTableModel();
+        tableData.setModel(model);
+        model.setRowCount(0);
+        model.setColumnCount(0);
+    }
+
+    /**
+     * load database names
+     */
+    private void loadDatabases() {
         List<String> Databases = connection.getDatabases();
         DefaultListModel model = new DefaultListModel();
         listDatabases.setModel(model);
-        Databases.stream().forEach((itr) -> {
+        for (String itr : Databases) {
             model.addElement(itr);
-        });
+        }
     }
-    
-    private void loadTables(String Database){
+
+    /**
+     *
+     * @param Database Database name
+     */
+    private void loadTables(String Database) {
+        clearTableData();
         List<String> Tables = connection.getTables(Database);
         DefaultListModel model = new DefaultListModel();
         listTables.setModel(model);
-        Tables.stream().forEach((itr) -> {
+        for (String itr : Tables) {
             model.addElement(itr);
-        });
+        }
     }
-        
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -76,6 +119,8 @@ public class AdminToolInterface extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         listTables = new javax.swing.JList();
         jLabel2 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tableData = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -89,6 +134,11 @@ public class AdminToolInterface extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        listDatabases.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listDatabasesValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(listDatabases);
 
         listTables.setModel(new javax.swing.AbstractListModel() {
@@ -96,9 +146,27 @@ public class AdminToolInterface extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        listTables.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listTablesValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(listTables);
 
         jLabel2.setText("Tables");
+
+        tableData.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(tableData);
 
         jMenu1.setText("File");
 
@@ -127,20 +195,25 @@ public class AdminToolInterface extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(518, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane2)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -151,6 +224,55 @@ public class AdminToolInterface extends javax.swing.JFrame {
         //Action: Close Application
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void listDatabasesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listDatabasesValueChanged
+        loadTables(listDatabases.getSelectedValue().toString());
+    }//GEN-LAST:event_listDatabasesValueChanged
+
+    private void listTablesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listTablesValueChanged
+        clearTableData();
+        if (listTables.getSelectedIndex()<0){
+            return;
+        }
+        
+        DefaultTableModel model;
+        try{
+            model = buildTableModel(connection.getTableData(listTables.getSelectedValue().toString(), listDatabases.getSelectedValue().toString()));
+        }catch(SQLException ex){
+            String[] arr = {"resultset error : " + ex.getMessage()};
+                Message.main(arr);
+                return;
+        }
+        tableData.setModel(model);
+    }//GEN-LAST:event_listTablesValueChanged
+    /** 
+     * 
+     * @param rs resultset to convert
+     * @return table model
+     * @throws SQLException 
+     */
+    private DefaultTableModel buildTableModel(ResultSet rs)
+        throws SQLException {
+            ResultSetMetaData metaData = rs.getMetaData();
+         // names of columns
+            Vector<String> columnNames = new Vector<>();
+            int columnCount = metaData.getColumnCount();
+            for (int column = 1; column <= columnCount; column++) {
+                columnNames.add(metaData.getColumnName(column));
+            }
+        // data of the table
+        Vector<Vector<Object>> data = new Vector<>();
+        while (rs.next()) {
+            Vector<Object> vector = new Vector<>();
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                vector.add(rs.getObject(columnIndex));
+            }
+            data.add(vector);
+        }
+
+        return new DefaultTableModel(data, columnNames);
+
+    }
 
     /**
      * @param args the command line arguments
@@ -195,7 +317,9 @@ public class AdminToolInterface extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JList listDatabases;
     private javax.swing.JList listTables;
+    private javax.swing.JTable tableData;
     // End of variables declaration//GEN-END:variables
 }
