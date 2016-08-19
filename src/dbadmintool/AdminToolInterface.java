@@ -230,6 +230,7 @@ public class AdminToolInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_listDatabasesValueChanged
 
     private void listTablesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listTablesValueChanged
+       
         clearTableData();
         if (listTables.getSelectedIndex()<0){
             return;
