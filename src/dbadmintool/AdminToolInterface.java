@@ -244,6 +244,7 @@ public class AdminToolInterface extends javax.swing.JFrame {
                 return;
         }
         tableData.setModel(model);
+
     }//GEN-LAST:event_listTablesValueChanged
     /** 
      * 
