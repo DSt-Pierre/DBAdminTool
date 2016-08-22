@@ -6,6 +6,7 @@
 package dbadmintool;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.sql.ResultSet;
 /**
  *
@@ -19,7 +20,13 @@ public class mySQLConnector extends SQLInterface {
     @Override
     public List<String> getDatabases() {
         List<String> results;
+        if ("".equals(getDatabase())){
         results = queryToStringArray("SHOW DATABASES;");
+        }
+        else{
+          results = new ArrayList<>();  
+          results.add(getDatabase());
+        }
         return results;
     }
     /**

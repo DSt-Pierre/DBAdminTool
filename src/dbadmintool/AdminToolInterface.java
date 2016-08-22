@@ -36,10 +36,10 @@ public class AdminToolInterface extends javax.swing.JFrame {
         clearDatabaseList();
         clearTableList();
         clearTableData();
-        Login.main(connection, this);
         listDatabases.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Login.main(connection, this);
     }
 
     /**
@@ -87,6 +87,9 @@ public class AdminToolInterface extends javax.swing.JFrame {
         listDatabases.setModel(model);
         for (String itr : Databases) {
             model.addElement(itr);
+        }
+        if (Databases.size() == 1){
+            listDatabases.setSelectedIndex(0);
         }
     }
 
