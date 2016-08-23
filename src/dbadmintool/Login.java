@@ -6,24 +6,30 @@
 package dbadmintool;
 
 import javax.swing.JFrame;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  *
  * @author Dave
  */
 public class Login extends javax.swing.JFrame {
-    private SQLInterface connection;
-    private AdminToolInterface mainWindow;
+    private final AdminToolInterface mainWindow;
+    private final String[] providers = {"MySQL"};
     /**
      * Creates new form Login
-     * @param cnx - SQL Connection to test
      * @param mw
      */
-    public Login(SQLInterface cnx, AdminToolInterface mw) {
+    public Login(AdminToolInterface mw) {
         initComponents();
-        connection = cnx;
         mainWindow = mw;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        comboProvider.setModel(model);
+        model.removeAllElements();
+        for(String itr:providers){
+            model.addElement(itr);
+        }
+        comboProvider.setSelectedIndex(0);
     }
 
     /**
@@ -44,6 +50,8 @@ public class Login extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        comboProvider = new javax.swing.JComboBox();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -70,6 +78,16 @@ public class Login extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel4.setText(" Database (Optional)");
 
+        comboProvider.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboProvider.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboProviderActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel5.setText("Provider");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -91,13 +109,17 @@ public class Login extends javax.swing.JFrame {
                                     .addComponent(jLabel3)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(21, 21, 21)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGap(18, 18, 18)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(18, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(pboxPassword)
                             .addComponent(tboxServer, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
                             .addComponent(tboxDatabase)
-                            .addComponent(tboxUsername))))
+                            .addComponent(tboxUsername)
+                            .addComponent(comboProvider, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(39, 39, 39))
         );
         layout.setVerticalGroup(
@@ -119,9 +141,13 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tboxDatabase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addGap(25, 25, 25)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(comboProvider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -132,6 +158,13 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_tboxServerActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        SQLInterface connection;
+        if (comboProvider.getSelectedIndex() == 0){
+            connection = new mySQLConnector();
+        }
+        else{
+            connection = new mySQLConnector();
+        }
        connection.setUsername(tboxUsername.getText());
        connection.setServer(tboxServer.getText());
        if("".equals(tboxDatabase.getText()) == false){
@@ -140,7 +173,7 @@ public class Login extends javax.swing.JFrame {
        connection.setPassword(getPassword());
        
        if(connection.connect()){
-          mainWindow.refresh();
+          mainWindow.refresh(connection);
           setVisible(false);
           dispose();
        }else{
@@ -148,6 +181,10 @@ public class Login extends javax.swing.JFrame {
        }
        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void comboProviderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboProviderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboProviderActionPerformed
     private String getPassword(){
         char[] pass;
         pass = pboxPassword.getPassword();
@@ -161,7 +198,7 @@ public class Login extends javax.swing.JFrame {
      * @param cnx
      * @param mw 
      */
-    public static void main(SQLInterface cnx, AdminToolInterface mw) {
+    public static void main(AdminToolInterface mw) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -188,17 +225,19 @@ public class Login extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Login(cnx,mw).setVisible(true);
+                new Login(mw).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox comboProvider;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPasswordField pboxPassword;
     private javax.swing.JTextField tboxDatabase;
     private javax.swing.JTextField tboxServer;

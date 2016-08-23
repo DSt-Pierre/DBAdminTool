@@ -19,7 +19,7 @@ import java.util.Vector;
  */
 public class AdminToolInterface extends javax.swing.JFrame {
 
-    private SQLInterface connection = new mySQLConnector();
+    private SQLInterface connection ;//= new mySQLConnector();
 
     /**
      * Creates new form AdminToolInterface
@@ -39,13 +39,14 @@ public class AdminToolInterface extends javax.swing.JFrame {
         listDatabases.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        Login.main(connection, this);
+        Login.main(this);
     }
 
     /**
      * refresh function
      */
-    public void refresh() {
+    public void refresh(SQLInterface connect) {
+        connection = connect;
         clearDatabaseList();
         clearTableList();
         if (connection.IsConnected()) {
