@@ -5,6 +5,10 @@
  */
 package dbadmintool;
 
+import javax.swing.WindowConstants;
+import javax.swing.JFrame;
+
+
 
 
 /**
@@ -20,6 +24,13 @@ public class Message extends javax.swing.JFrame {
     static String Msg;
     public Message() {
         initComponents();
+        devInitComponents();
+    }
+    /**
+     * Developer defined component initialization
+     */
+    private void devInitComponents(){
+       
     }
 /*    public void ShowMessage(String MsgTemp)
     {
@@ -43,7 +54,7 @@ public class Message extends javax.swing.JFrame {
         Confirm = new javax.swing.JButton();
         lblMsg = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         Confirm.setText("OK");
         Confirm.addActionListener(new java.awt.event.ActionListener() {
@@ -125,6 +136,7 @@ public class Message extends javax.swing.JFrame {
             @Override
             public void run() {
                 new Message().setVisible(true);
+                
             }
         });
     }
